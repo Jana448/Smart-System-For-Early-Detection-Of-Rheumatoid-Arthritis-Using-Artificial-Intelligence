@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الكشف المبكر عن الروماتويد - لوحة التحكم</title>
+    <link rel="stylesheet" href="frontend/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span class="icon">🏥</span>
+                <span>نظام الكشف المبكر عن الروماتويد</span>
+            </div>
+            <ul class="navbar-menu">
+                <li><a href="index.html" class="active">الرئيسية</a></li>
+                <li><a href="patients.html">المرضى</a></li>
+                <li><a href="analytics.html">التحليلات</a></li>
+                <li><a href="reports.html">التقارير</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <div class="notification-badge" onclick="showNotifications()">
+                    <span style="font-size: 1.5rem; cursor: pointer;">🔔</span>
+                    <span class="badge" id="notificationCount">2</span>
+                </div>
+                <button class="btn btn-primary" onclick="showAddPatientModal()">➕ إضافة مريض</button>
+            </div>
+        </div>
+    </nav>
+    <div class="main-container">
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">إجمالي المرضى</span>
+                    <div class="stat-card-icon">👥</div>
+                </div>
+                <div class="stat-card-value" id="totalPatients">10</div>
+                <div class="stat-card-change positive">
+                    <span>↑ 12%</span>
+                    <span>عن الشهر الماضي</span>
+                </div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">حالات عالية الخطورة</span>
+                    <div class="stat-card-icon">⚠️</div>
+                </div>
+                <div class="stat-card-value" id="atRiskPatients">3</div>
+                <div class="stat-card-change negative">
+                    <span>↑ 5%</span>
+                    <span>يحتاج متابعة</span>
+                </div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">حالات مستقرة</span>
+                    <div class="stat-card-icon">✅</div>
+                </div>
+                <div class="stat-card-value" id="stablePatients">7</div>
+                <div class="stat-card-change positive">
+                    <span>↓ 8%</span>
+                    <span>تحسن ملحوظ</span>
+                </div>
+            </div>
+
+            <div class="stat-card danger">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">تنبيهات نشطة</span>
+                    <div class="stat-card-icon">🚨</div>
+                </div>
+                <div class="stat-card-value" id="activeAlerts">2</div>
+                <div class="stat-card-change negative">
+                    <span>3 حرجة</span>
+                    <span>تحتاج تدخل فوري</span>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">المرضى الأخيرون</h2>
+                    <div class="flex gap-2">
+                        <input type="text" id="searchPatients" placeholder="🔍 بحث..." 
+                               style="padding: 0.5rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <button class="btn btn-secondary btn-sm" onclick="refreshPatients()">🔄 تحديث</button>
+                    </div>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <div id="patientsTableContainer">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>رقم المريض</th>
+                                    <th>الاسم</th>
+                                    <th>العمر</th>
+                                    <th>الجنس</th>
+                                    <th>مستوى الخطر</th>
+                                    <th>آخر زيارة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>P001</strong></td>
+                                    <td>أحمد محمد علي الشمري</td>
+                                    <td>45</td>
+                                    <td>ذكر</td>
+                                    <td><span class="badge badge-danger">خطر عالي</span></td>
+                                    <td>2024-10-28</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=P001'">عرض</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>P002</strong></td>
+                                    <td>فاطمة حسن عبدالله القحطاني</td>
+                                    <td>38</td>
+                                    <td>أنثى</td>
+                                    <td><span class="badge badge-warning">خطر متوسط</span></td>
+                                    <td>2024-10-27</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=P002'">عرض</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>P003</strong></td>
+                                    <td>خالد عبدالله سعيد العتيبي</td>
+                                    <td>52</td>
+                                    <td>ذكر</td>
+                                    <td><span class="badge badge-success">خطر منخفض</span></td>
+                                    <td>2024-10-26</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=P003'">عرض</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>P004</strong></td>
+                                    <td>مريم سعيد محمد الدوسري</td>
+                                    <td>41</td>
+                                    <td>أنثى</td>
+                                    <td><span class="badge badge-danger">خطر عالي</span></td>
+                                    <td>2024-10-28</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=P004'">عرض</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>P005</strong></td>
+                                    <td>عمر يوسف إبراهيم الغامدي</td>
+                                    <td>35</td>
+                                    <td>ذكر</td>
+                                    <td><span class="badge badge-warning">خطر متوسط</span></td>
+                                    <td>2024-10-25</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=P005'">عرض</button></td>
+                                </tr>
+                                <tr data-extra-patient style="display: none;">
+                                    <td><strong>P006</strong></td>
+                                    <td>سارة أحمد عبدالعزيز الحربي</td>
+                                    <td>29</td>
+                                    <td>أنثى</td>
+                                    <td><span class="badge badge-success">خطر منخفض</span></td>
+                                    <td>2024-10-24</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=P006'">عرض</button></td>
+                                </tr>
+                                <tr data-extra-patient style="display: none;">
+                                    <td><strong>P007</strong></td>
+                                    <td>محمود إبراهيم خالد الزهراني</td>
+                                    <td>48</td>
+                                    <td>ذكر</td>
+                                    <td><span class="badge badge-danger">خطر عالي</span></td>
+                                    <td>2024-10-23</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=P007'">عرض</button></td>
+                                </tr>
+                                <tr data-extra-patient style="display: none;">
+                                    <td><strong>P008</strong></td>
+                                    <td>نورة سالم عبدالرحمن المطيري</td>
+                                    <td>33</td>
+                                    <td>أنثى</td>
+                                    <td><span class="badge badge-warning">خطر متوسط</span></td>
+                                    <td>2024-10-22</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=P008'">عرض</button></td>
+                                </tr>
+                                <tr data-extra-patient style="display: none;">
+                                    <td><strong>P009</strong></td>
+                                    <td>يوسف عبدالرحمن فهد العنزي</td>
+                                    <td>56</td>
+                                    <td>ذكر</td>
+                                    <td><span class="badge badge-success">خطر منخفض</span></td>
+                                    <td>2024-10-21</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=P009'">عرض</button></td>
+                                </tr>
+                                <tr data-extra-patient style="display: none;">
+                                    <td><strong>P010</strong></td>
+                                    <td>ليلى محمد صالح السبيعي</td>
+                                    <td>42</td>
+                                    <td>أنثى</td>
+                                    <td><span class="badge badge-warning">خطر متوسط</span></td>
+                                    <td>2024-10-20</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=P010'">عرض</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer" style="text-align: center;">
+                    <button class="btn btn-secondary btn-sm" id="loadMoreBtn" onclick="loadMorePatients()">
+                        📋 عرض المزيد من المرضى
+                    </button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">التنبيهات الأخيرة</h2>
+                    <button class="btn btn-secondary btn-sm" onclick="refreshAlerts()">🔄</button>
+                </div>
+                <div class="card-body">
+                    <div id="alertsList">
+                        <div class="alert-item warning">
+                            <div class="alert-icon">⚠️</div>
+                            <div class="alert-content">
+                                <h4>مريض يحتاج متابعة</h4>
+                                <p>المريض أحمد محمد علي - نتائج تحليل مرتفعة</p>
+                                <small>منذ ساعتين</small>
+                            </div>
+                        </div>
+                        <div class="alert-item info">
+                            <div class="alert-icon">ℹ️</div>
+                            <div class="alert-content">
+                                <h4>موعد قادم</h4>
+                                <p>موعد المريضة مريم سعيد غداً الساعة 10:00 صباحاً</p>
+                                <small>منذ 5 ساعات</small>
+                            </div>
+                        </div>
+                        <div class="alert-item success">
+                            <div class="alert-icon">✅</div>
+                            <div class="alert-content">
+                                <h4>تحليل مكتمل</h4>
+                                <p>اكتمل تحليل الصور الطبية للمريض خالد عبدالله</p>
+                                <small>أمس</small>
+                            </div>
+                        </div>
+                        <div class="alert-item danger extra-alert" style="display: none;">
+                            <div class="alert-icon">🚨</div>
+                            <div class="alert-content">
+                                <h4>حالة طارئة</h4>
+                                <p>المريضة فاطمة حسن - ارتفاع حاد في مؤشرات الالتهاب</p>
+                                <small>منذ 3 ساعات</small>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item warning extra-alert" style="display: none;">
+                            <div class="alert-icon">⚠️</div>
+                            <div class="alert-content">
+                                <h4>تذكير بالأدوية</h4>
+                                <p>المريض محمد أحمد - موعد تناول الدواء اليوم</p>
+                                <small>منذ 4 ساعات</small>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item info extra-alert" style="display: none;">
+                            <div class="alert-icon">📋</div>
+                            <div class="alert-content">
+                                <h4>نتائج جديدة</h4>
+                                <p>وصلت نتائج التحاليل للمريضة سارة علي</p>
+                                <small>منذ 6 ساعات</small>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item success extra-alert" style="display: none;">
+                            <div class="alert-icon">✅</div>
+                            <div class="alert-content">
+                                <h4>تحسن ملحوظ</h4>
+                                <p>المريض خالد السالم - تحسن في المؤشرات الحيوية</p>
+                                <small>منذ 8 ساعات</small>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item warning extra-alert" style="display: none;">
+                            <div class="alert-icon">⏰</div>
+                            <div class="alert-content">
+                                <h4>موعد متابعة</h4>
+                                <p>المريضة نورة الدوسري - موعد المتابعة بعد غد</p>
+                                <small>منذ 10 ساعات</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button id="showAllAlertsBtn" class="btn btn-secondary btn-sm" onclick="toggleAllAlerts()">📋 عرض جميع التنبيهات</button>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="margin-top: 2rem; margin-bottom: 2rem; margin-left: -2rem; margin-right: -2rem; width: calc(100% + 4rem);">
+            <div class="card-header">
+                <h2 class="card-title">📊 إحصائيات الكشف المبكر</h2>
+                <div class="flex gap-2">
+                    <button class="btn btn-secondary btn-sm" onclick="changeChartPeriod('week')">أسبوع</button>
+                    <button class="btn btn-primary btn-sm" onclick="changeChartPeriod('month')">شهر</button>
+                    <button class="btn btn-secondary btn-sm" onclick="changeChartPeriod('year')">سنة</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;" class="analytics-grid">
+                    <div>
+                        <div class="chart-container" style="height: 450px; padding: 1rem;">
+                            <canvas id="detectionChart"></canvas>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div class="stat-card info" style="margin: 0;">
+                            <div class="stat-card-header">
+                                <span class="stat-card-title">متوسط العمر</span>
+                                <div class="stat-card-icon">👤</div>
+                            </div>
+                            <div class="stat-card-value">42 سنة</div>
+                            <div class="stat-card-change">
+                                <span>للمرضى المسجلين</span>
+                            </div>
+                        </div>
+                        <div class="stat-card success" style="margin: 0;">
+                            <div class="stat-card-header">
+                                <span class="stat-card-title">نسبة التحسن</span>
+                                <div class="stat-card-icon">📈</div>
+                            </div>
+                            <div class="stat-card-value">68%</div>
+                            <div class="stat-card-change positive">
+                                <span>↑ 12%</span>
+                                <span>عن الشهر الماضي</span>
+                            </div>
+                        </div>
+                        <div class="stat-card primary" style="margin: 0;">
+                            <div class="stat-card-header">
+                                <span class="stat-card-title">معدل الكشف المبكر</span>
+                                <div class="stat-card-icon">🎯</div>
+                            </div>
+                            <div class="stat-card-value">92%</div>
+                            <div class="stat-card-change positive">
+                                <span>↑ 8%</span>
+                                <span>دقة النظام</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="addPatientModal" class="modal" onclick="if(event.target === this) closeModal('addPatientModal')">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 0.75rem; border-radius: 12px; font-size: 1.5rem;">
+                        👤
+                    </div>
+                    <div>
+                        <h3 class="modal-title" style="margin: 0; color: white; font-size: 1.5rem;">إضافة مريض جديد</h3>
+                        <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.875rem;">أدخل بيانات المريض الأساسية</p>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeModal('addPatientModal')" style="color: white; opacity: 0.9;">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <form id="addPatientForm">
+                    <div class="form-group">
+                        <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                            <span style="color: #667eea;">📝</span>
+                            الاسم الكامل
+                            <span style="color: #ef4444;">*</span>
+                        </label>
+                        <input type="text" name="name" class="form-control" placeholder="مثال: أحمد محمد علي الشمري" required style="padding: 0.875rem; font-size: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: all 0.3s;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                <span style="color: #667eea;">🎂</span>
+                                العمر
+                                <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="number" name="age" class="form-control" placeholder="مثال: 45" min="1" max="120" required style="padding: 0.875rem; font-size: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: all 0.3s;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                <span style="color: #667eea;">⚧</span>
+                                الجنس
+                                <span style="color: #ef4444;">*</span>
+                            </label>
+                            <select name="gender" class="form-control" required style="padding: 0.875rem; font-size: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: all 0.3s; cursor: pointer;">
+                                <option value="">اختر الجنس</option>
+                                <option value="male">ذكر</option>
+                                <option value="female">أنثى</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                <span style="color: #667eea;">📱</span>
+                                رقم الهاتف
+                            </label>
+                            <input type="tel" name="phone" class="form-control" placeholder="مثال: 0501234567" style="padding: 0.875rem; font-size: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: all 0.3s;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                <span style="color: #667eea;">📧</span>
+                                البريد الإلكتروني
+                            </label>
+                            <input type="email" name="email" class="form-control" placeholder="مثال: patient@example.com" style="padding: 0.875rem; font-size: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; transition: all 0.3s;">
+                        </div>
+                    </div>
+                    <div style="background: #f3f4f6; padding: 1rem; border-radius: 8px; border-right: 4px solid #667eea; margin-top: 1rem;">
+                        <p style="margin: 0; font-size: 0.875rem; color: #6b7280;">
+                            <strong>ملاحظة:</strong> الحقول المميزة بـ <span style="color: #ef4444;">*</span> إلزامية
+                        </p>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="background: #f9fafb; padding: 1.5rem 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeModal('addPatientModal')" style="padding: 0.75rem 2rem; font-size: 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>❌</span>
+                    إلغاء
+                </button>
+                <button class="btn btn-primary" onclick="submitAddPatient()" style="padding: 0.75rem 2rem; font-size: 1rem; border-radius: 8px; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                    <span>💾</span>
+                    حفظ البيانات
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <script>
+        let detectionChart = null;
+        
+        const chartData = {
+            week: {
+                labels: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+                newCases: [2, 3, 1, 4, 3, 2, 3],
+                highRisk: [1, 1, 0, 2, 1, 1, 1],
+                stable: [1, 2, 1, 2, 2, 1, 2]
+            },
+            month: {
+                labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                newCases: [12, 15, 18, 22, 28, 32],
+                highRisk: [3, 5, 6, 8, 10, 12],
+                stable: [9, 10, 12, 14, 18, 20]
+            },
+            year: {
+                labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+                newCases: [85, 120, 145, 180, 220, 265],
+                highRisk: [25, 35, 42, 55, 68, 82],
+                stable: [60, 85, 103, 125, 152, 183]
+            }
+        };
+        function createChart(period) {
+            console.log('Creating chart for period:', period);
+            
+            const canvas = document.getElementById('detectionChart');
+            if (!canvas) {
+                console.error('Canvas element not found!');
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('Could not get 2d context!');
+                return;
+            }
+            
+            const data = chartData[period];
+            console.log('Chart data:', data);
+            
+            if (detectionChart) {
+                detectionChart.destroy();
+            }
+            
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js not loaded!');
+                return;
+            }
+            
+            let yAxisConfig = {
+                beginAtZero: true,
+                ticks: {
+                    font: {
+                        family: 'Cairo, sans-serif'
+                    },
+                    stepSize: 1  
+                }
+            };
+            
+            
+            if (period === 'week') {
+                yAxisConfig.ticks.stepSize = 1;  
+                yAxisConfig.max = 5;
+            } else if (period === 'month') {
+                yAxisConfig.ticks.stepSize = 5;  
+            } else if (period === 'year') {
+                yAxisConfig.ticks.stepSize = 50; 
+            }
+            
+            detectionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'حالات جديدة',
+                            data: data.newCases,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'حالات عالية الخطورة',
+                            data: data.highRisk,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'حالات مستقرة',
+                            data: data.stable,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    family: 'Cairo, sans-serif'
+                                }
+                            }
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: yAxisConfig,
+                        x: {
+                            ticks: {
+                                font: {
+                                    family: 'Cairo, sans-serif'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            console.log('Chart.js available:', typeof Chart !== 'undefined');
+            
+            setTimeout(function() {
+                createChart('month'); 
+            }, 100);
+            
+            
+            loadSavedPatients();
+            
+            
+            updatePatientCount();
+            
+            
+            const searchInput = document.getElementById('searchPatients');
+            if (searchInput) {
+                searchInput.addEventListener('input', searchPatients);
+                
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchPatients();
+                    }
+                });
+            }
+        });
+
+        function changeChartPeriod(period) {
+            createChart(period);
+            
+            const buttons = document.querySelectorAll('.card-header .btn-sm');
+            buttons.forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+            });
+            
+            if (event && event.target) {
+                event.target.classList.remove('btn-secondary');
+                event.target.classList.add('btn-primary');
+            }
+        }
+        
+        let patientsExpanded = false;
+        
+        function loadMorePatients() {
+            const hiddenPatients = document.querySelectorAll('tr[data-extra-patient]');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            
+            console.log('🔍 عدد المرضى المخفيين:', hiddenPatients.length);
+            
+            if (!patientsExpanded) {
+                hiddenPatients.forEach((patient, index) => {
+                    setTimeout(() => {
+                        patient.style.display = 'table-row';
+                        patient.style.animation = 'fadeIn 0.3s ease-out';
+                    }, index * 50); 
+                });
+                
+                loadMoreBtn.innerHTML = '📤 عرض أقل';
+                loadMoreBtn.classList.remove('btn-secondary');
+                loadMoreBtn.classList.add('btn-primary');
+                patientsExpanded = true;
+                
+                console.log('✅ تم عرض', hiddenPatients.length, 'مريض إضافي');
+            } else {
+                hiddenPatients.forEach((patient, index) => {
+                    setTimeout(() => {
+                        patient.style.animation = 'fadeOut 0.3s ease-out';
+                        setTimeout(() => {
+                            patient.style.display = 'none';
+                        }, 300);
+                    }, index * 30);
+                });
+                
+                loadMoreBtn.innerHTML = '📋 عرض المزيد من المرضى';
+                loadMoreBtn.classList.remove('btn-primary');
+                loadMoreBtn.classList.add('btn-secondary');
+                patientsExpanded = false;
+                
+                console.log('✅ تم إخفاء', hiddenPatients.length, 'مريض إضافي');
+            }
+        }
+        
+        function refreshPatients() {
+            location.reload();
+        }
+        
+        let alertsExpanded = false;
+        
+        function toggleAllAlerts() {
+            const extraAlerts = document.querySelectorAll('.extra-alert');
+            const btn = document.getElementById('showAllAlertsBtn');
+            
+            if (!alertsExpanded) {
+                extraAlerts.forEach((alert, index) => {
+                    setTimeout(() => {
+                        alert.style.display = 'flex';
+                        alert.style.animation = 'fadeIn 0.3s ease-out';
+                    }, index * 100); 
+                });
+                
+                btn.innerHTML = '📋 إخفاء التنبيهات الإضافية';
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+                alertsExpanded = true;
+                
+                console.log('📋 تم عرض جميع التنبيهات (8 تنبيهات)');
+            } else {
+                extraAlerts.forEach((alert, index) => {
+                    setTimeout(() => {
+                        alert.style.animation = 'fadeOut 0.3s ease-out';
+                        setTimeout(() => {
+                            alert.style.display = 'none';
+                        }, 300);
+                    }, index * 50);
+                });
+                
+                btn.innerHTML = '📋 عرض جميع التنبيهات';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+                alertsExpanded = false;
+                
+                console.log('📋 تم إخفاء التنبيهات الإضافية');
+            }
+        }
+        
+        function clearSavedPatients() {
+            if (confirm('هل تريد مسح جميع البيانات المحفوظة؟')) {
+                localStorage.removeItem('rheumatoidPatients');
+                console.log('🗑️ تم مسح جميع البيانات المحفوظة');
+                location.reload();
+            }
+        }
+        
+        
+        function deletePatient(patientId, patientName) {
+            if (confirm(`هل تريد حذف المريض ${patientId} - ${patientName}؟`)) {
+                 
+                const tbody = document.querySelector('.data-table tbody');
+                const rows = tbody.querySelectorAll('tr');
+                
+                rows.forEach(row => {
+                    const rowPatientId = row.cells[0].textContent.trim();
+                    if (rowPatientId === patientId) {
+                            
+                        row.style.animation = 'fadeOut 0.3s ease-out';
+                        setTimeout(() => {
+                            row.remove();
+                            
+                            savePatientsToStorage();
+                            
+                              
+                            updatePatientCount();
+                            
+                            showSuccessMessage(`🗑️ تم حذف المريض ${patientId} بنجاح`);
+                            
+                            console.log('🗑️ تم حذف المريض:', patientId, '-', patientName);
+                        }, 300);
+                    }
+                });
+            }
+        }
+        
+        function searchPatients() {
+            const searchInput = document.getElementById('searchPatients');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const tableRows = document.querySelectorAll('.data-table tbody tr');
+            let visibleCount = 0;
+            
+            tableRows.forEach(row => {
+                const patientId = row.cells[0].textContent.toLowerCase();
+                const patientName = row.cells[1].textContent.toLowerCase();
+                const patientAge = row.cells[2].textContent.toLowerCase();
+                const patientGender = row.cells[3].textContent.toLowerCase();
+                const patientRisk = row.cells[4].textContent.toLowerCase();
+                const patientDate = row.cells[5].textContent.toLowerCase();
+                
+                const matchFound = patientId.includes(searchTerm) ||
+                                 patientName.includes(searchTerm) ||
+                                 patientAge.includes(searchTerm) ||
+                                 patientGender.includes(searchTerm) ||
+                                 patientRisk.includes(searchTerm) ||
+                                 patientDate.includes(searchTerm);
+                
+                if (matchFound) {
+                    row.style.display = 'table-row';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            if (visibleCount === 0 && searchTerm !== '') {
+                console.log('🔍 لم يتم العثور على نتائج للبحث: ' + searchTerm);
+            } else if (searchTerm !== '') {
+                console.log(`🔍 تم العثور على ${visibleCount} نتيجة`);
+            }
+        }
+        
+        
+        function showAddPatientModal() {
+            document.getElementById('addPatientModal').style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId === 'addPatientModal') {
+                document.getElementById('addPatientForm').reset();
+            }
+        }
+        
+        function submitAddPatient() {
+            const form = document.getElementById('addPatientForm');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+        
+            const formData = new FormData(form);
+            const patientData = {
+                name: formData.get('name'),
+                age: formData.get('age'),
+                gender: formData.get('gender') === 'male' ? 'ذكر' : 'أنثى',
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            console.log('بيانات المريض:', patientData);
+            
+            
+            closeModal('addPatientModal');
+            
+            
+            addPatientToTable(patientData);
+            
+              
+            showSuccessMessage('✅ تم حفظ بيانات المريض بنجاح!');
+            
+           
+        }
+        
+        function getNextPatientNumber() {
+            const tbody = document.querySelector('.data-table tbody');
+            const allRows = tbody.querySelectorAll('tr');
+            let maxNumber = 10; 
+            
+            allRows.forEach(row => {
+                const patientId = row.querySelector('strong').textContent;
+                const number = parseInt(patientId.replace('P', ''));
+                if (number > maxNumber) {
+                    maxNumber = number;
+                }
+            });
+            
+            return 'P' + String(maxNumber + 1).padStart(3, '0');
+        }
+        
+        
+        function savePatientsToStorage() {
+            const tbody = document.querySelector('.data-table tbody');
+            const rows = tbody.querySelectorAll('tr');
+            const patients = [];
+            
+            rows.forEach(row => {
+                const patient = {
+                    id: row.cells[0].textContent.trim(),
+                    name: row.cells[1].textContent.trim(),
+                    age: row.cells[2].textContent.trim(),
+                    gender: row.cells[3].textContent.trim(),
+                    risk: row.cells[4].querySelector('.badge').className,
+                    riskText: row.cells[4].textContent.trim(),
+                    date: row.cells[5].textContent.trim()
+                };
+                patients.push(patient);
+            });
+            
+            patients.sort((a, b) => {
+                const numA = parseInt(a.id.replace('P', ''));
+                const numB = parseInt(b.id.replace('P', ''));
+                return numA - numB;
+            });
+            
+            localStorage.setItem('rheumatoidPatients', JSON.stringify(patients));
+            console.log('💾 تم حفظ', patients.length, 'مريض في LocalStorage (مرتبين)');
+        }
+        
+        function loadSavedPatients() {
+            const savedPatients = localStorage.getItem('rheumatoidPatients');
+            if (!savedPatients) {
+                console.log('📂 لا توجد بيانات محفوظة');
+                return;
+            }
+            
+            const patients = JSON.parse(savedPatients);
+            const tbody = document.querySelector('.data-table tbody');
+            
+            tbody.innerHTML = '';
+            
+            patients.forEach((patient, index) => {
+                const newRow = document.createElement('tr');
+                
+                const patientNumber = parseInt(patient.id.replace('P', ''));
+                if (patientNumber >= 6 && patientNumber <= 10) {
+                    newRow.setAttribute('data-extra-patient', 'true');
+                    newRow.style.display = 'none'; // مخفي افتراضياً
+                }
+                
+                newRow.innerHTML = `
+                    <td><strong>${patient.id}</strong></td>
+                    <td>${patient.name}</td>
+                    <td>${patient.age}</td>
+                    <td>${patient.gender}</td>
+                    <td><span class="${patient.risk}">${patient.riskText}</span></td>
+                    <td>${patient.date}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=${patient.id}'" style="margin-left: 0.5rem;">عرض</button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePatient('${patient.id}', '${patient.name}')">🗑️ حذف</button>
+                    </td>
+                `;
+                tbody.appendChild(newRow);
+            });
+            
+            console.log('✅ تم تحميل', patients.length, 'مريض من LocalStorage');
+        }
+        
+        function addPatientToTable(patientData) {
+            const tbody = document.querySelector('.data-table tbody');
+            
+            const newPatientNumber = getNextPatientNumber();
+            
+            const riskLevels = [
+                { class: 'badge-success', text: 'خطر منخفض' },
+                { class: 'badge-warning', text: 'خطر متوسط' },
+                { class: 'badge-danger', text: 'خطر عالي' }
+            ];
+            const randomRisk = riskLevels[Math.floor(Math.random() * riskLevels.length)];
+            
+            const newRow = document.createElement('tr');
+            newRow.style.animation = 'fadeIn 0.5s ease-out';
+            newRow.innerHTML = `
+                <td><strong>${newPatientNumber}</strong></td>
+                <td>${patientData.name}</td>
+                <td>${patientData.age}</td>
+                <td>${patientData.gender}</td>
+                <td><span class="badge ${randomRisk.class}">${randomRisk.text}</span></td>
+                <td>${patientData.date}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=${newPatientNumber}'" style="margin-left: 0.5rem;">عرض</button>
+                    <button class="btn btn-sm btn-danger" onclick="deletePatient('${newPatientNumber}', '${patientData.name}')">🗑️ حذف</button>
+                </td>
+            `;
+            
+            tbody.appendChild(newRow);
+            
+            savePatientsToStorage();
+            
+            updatePatientCount();
+            
+            console.log('✅ تم إضافة المريض:', newPatientNumber, '-', patientData.name);
+        }
+        
+        function updatePatientCount() {
+            const highRiskPatients = document.querySelectorAll('.data-table tbody .badge-danger').length;
+            const atRiskElement = document.getElementById('atRiskPatients');
+            if (atRiskElement) {
+                atRiskElement.textContent = highRiskPatients;
+            }
+            
+            const mediumRiskPatients = document.querySelectorAll('.data-table tbody .badge-warning').length;
+            
+            const stablePatients = document.querySelectorAll('.data-table tbody .badge-success').length;
+            const stablePatientsElement = document.getElementById('stablePatients');
+            if (stablePatientsElement) {
+                stablePatientsElement.textContent = stablePatients;
+            }
+            
+            const totalPatients = highRiskPatients + mediumRiskPatients + stablePatients;
+            const totalPatientsElement = document.getElementById('totalPatients');
+            if (totalPatientsElement) {
+                totalPatientsElement.textContent = totalPatients;
+            }
+            
+            const activeAlerts = highRiskPatients + mediumRiskPatients;
+            const activeAlertsElement = document.getElementById('activeAlerts');
+            if (activeAlertsElement) {
+                activeAlertsElement.textContent = activeAlerts;
+            }
+            
+            const calculatedTotal = highRiskPatients + mediumRiskPatients + stablePatients;
+            const actualRowCount = document.querySelectorAll('.data-table tbody tr').length;
+            
+            console.log('📊 تم تحديث جميع الإحصائيات:', {
+                '🔴 حالات عالية الخطورة': highRiskPatients,
+                '🟡 حالات متوسطة الخطورة': mediumRiskPatients,
+                '🟢 حالات مستقرة': stablePatients,
+                '➕ المجموع المحسوب': calculatedTotal,
+                '👥 إجمالي المرضى': totalPatients,
+                '🚨 تنبيهات نشطة': activeAlerts,
+                '✅ التحقق': calculatedTotal === actualRowCount ? 'صحيح' : '⚠️ خطأ في الحساب'
+            });
+            
+            if (calculatedTotal !== actualRowCount) {
+                console.warn('⚠️ تحذير: هناك تباين بين المجموع المحسوب وعدد الصفوف الفعلي!');
+                console.warn(`المحسوب: ${calculatedTotal}, الفعلي: ${actualRowCount}`);
+            }
+        }
+        
+        function showSuccessMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 1.25rem 2rem;
+                border-radius: 12px;
+                box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                animation: slideInRight 0.5s ease-out;
+            `;
+            messageDiv.innerHTML = `
+                <span style="font-size: 1.5rem;">✅</span>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.style.animation = 'slideOutRight 0.5s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(messageDiv);
+                }, 500);
+            }, 3000);
+        }
+    </script>
+    
+    <style>
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+    </style>
+    
+    <script src="frontend/js/mock-data.js"></script>
+    <script src="frontend/js/api.js"></script>
+    <script src="frontend/js/app.js"></script>
+</body>
+</html>

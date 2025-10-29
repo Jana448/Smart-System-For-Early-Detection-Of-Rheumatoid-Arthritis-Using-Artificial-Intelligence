@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير - نظام الكشف المبكر عن الروماتويد</title>
+    <link rel="stylesheet" href="frontend/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span class="icon">🏥</span>
+                <span>نظام الكشف المبكر عن الروماتويد</span>
+            </div>
+            <ul class="navbar-menu">
+                <li><a href="index.html">الرئيسية</a></li>
+                <li><a href="patients.html">المرضى</a></li>
+                <li><a href="analytics.html">التحليلات</a></li>
+                <li><a href="reports.html" class="active">التقارير</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <div class="notification-badge" onclick="showNotifications()">
+                    <span style="font-size: 1.5rem; cursor: pointer;">🔔</span>
+                    <span class="badge" id="notificationCount">2</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h1>📋 التقارير الطبية</h1>
+            <p>إنشاء وعرض التقارير الطبية الشاملة</p>
+        </div>
+
+        <div class="dashboard-grid" style="margin-bottom: 2rem;">
+            <div class="card clickable" onclick="generateReport('patient')">
+                <div class="card-body" style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">👤</div>
+                    <h3>تقرير مريض</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">تقرير شامل لحالة مريض محدد</p>
+                </div>
+            </div>
+
+            <div class="card clickable" onclick="generateReport('monthly')">
+                <div class="card-body" style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+                    <h3>تقرير شهري</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">ملخص شهري لجميع الحالات</p>
+                </div>
+            </div>
+
+            <div class="card clickable" onclick="generateReport('statistics')">
+                <div class="card-body" style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                    <h3>تقرير إحصائي</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">تحليلات وإحصائيات مفصلة</p>
+                </div>
+            </div>
+
+            <div class="card clickable" onclick="generateReport('highrisk')">
+                <div class="card-body" style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+                    <h3>حالات عالية الخطورة</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">تقرير بالحالات الحرجة</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">التقارير الأخيرة</h2>
+                <button class="btn btn-primary" onclick="showNewReportModal()">➕ تقرير جديد</button>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>نوع التقرير</th>
+                            <th>التاريخ</th>
+                            <th>الفترة</th>
+                            <th>عدد الحالات</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>📊 تقرير إحصائي</strong></td>
+                            <td>2024-10-28</td>
+                            <td>أكتوبر 2024</td>
+                            <td>5 مرضى</td>
+                            <td><span class="badge badge-success">مكتمل</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="viewReport(1)">👁️ عرض</button>
+                                <button class="btn btn-sm btn-secondary" onclick="downloadReport(1)">📥 تحميل</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>⚠️ حالات عالية الخطورة</strong></td>
+                            <td>2024-10-25</td>
+                            <td>أكتوبر 2024</td>
+                            <td>2 مرضى</td>
+                            <td><span class="badge badge-success">مكتمل</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="viewReport(2)">👁️ عرض</button>
+                                <button class="btn btn-sm btn-secondary" onclick="downloadReport(2)">📥 تحميل</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>📅 تقرير شهري</strong></td>
+                            <td>2024-10-01</td>
+                            <td>سبتمبر 2024</td>
+                            <td>4 مرضى</td>
+                            <td><span class="badge badge-success">مكتمل</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="viewReport(3)">👁️ عرض</button>
+                                <button class="btn btn-sm btn-secondary" onclick="downloadReport(3)">📥 تحميل</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="reportPreview" class="card" style="margin-top: 2rem; display: none;">
+            <div class="card-header">
+                <h2 class="card-title">معاينة التقرير</h2>
+                <button class="btn btn-secondary" onclick="closeReportPreview()">✕ إغلاق</button>
+            </div>
+            <div class="card-body" id="reportContent">
+            </div>
+        </div>
+    </div>
+
+    <div id="newReportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ إنشاء تقرير جديد</h2>
+                <button class="modal-close" onclick="closeModal('newReportModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="newReportForm">
+                    <div class="form-group">
+                        <label>نوع التقرير *</label>
+                        <select id="reportType" required>
+                            <option value="">اختر نوع التقرير...</option>
+                            <option value="patient">تقرير مريض</option>
+                            <option value="monthly">تقرير شهري</option>
+                            <option value="statistics">تقرير إحصائي</option>
+                            <option value="highrisk">حالات عالية الخطورة</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="patientSelectGroup" style="display: none;">
+                        <label>اختر المريض *</label>
+                        <select id="reportPatient">
+                            <option value="">اختر المريض...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الفترة الزمنية *</label>
+                        <select id="reportPeriod" required>
+                            <option value="current">الشهر الحالي</option>
+                            <option value="last">الشهر الماضي</option>
+                            <option value="quarter">آخر 3 أشهر</option>
+                            <option value="year">آخر سنة</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>تضمين</label>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" checked> البيانات السريرية
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" checked> الرسوم البيانية
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox"> الصور الطبية
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox"> التوصيات الطبية
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('newReportModal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="createReport()">📄 إنشاء التقرير</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔔 التنبيهات</h2>
+                <button class="modal-close" onclick="closeModal('notificationsModal')">×</button>
+            </div>
+            <div class="modal-body" id="notificationsContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="frontend/js/mock-data.js"></script>
+    <script src="frontend/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadPatientsList();
+            await updateNotificationCount();
+        });
+
+        async function loadPatientsList() {
+            const response = await API.getPatients();
+            const patients = response.data;
+            
+            const select = document.getElementById('reportPatient');
+            select.innerHTML = '<option value="">اختر المريض...</option>' + 
+                patients.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        }
+
+        function generateReport(type) {
+            document.getElementById('reportType').value = type;
+            showNewReportModal();
+        }
+
+        function showNewReportModal() {
+            document.getElementById('newReportModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        document.getElementById('reportType')?.addEventListener('change', function() {
+            const patientGroup = document.getElementById('patientSelectGroup');
+            if (this.value === 'patient') {
+                patientGroup.style.display = 'block';
+            } else {
+                patientGroup.style.display = 'none';
+            }
+        });
+
+        async function createReport() {
+            const type = document.getElementById('reportType').value;
+            const period = document.getElementById('reportPeriod').value;
+            
+            if (!type) {
+                alert('الرجاء اختيار نوع التقرير');
+                return;
+            }
+
+            closeModal('newReportModal');
+            alert('جاري إنشاء التقرير... سيتم إشعارك عند الانتهاء');
+            
+            setTimeout(() => {
+                alert('✅ تم إنشاء التقرير بنجاح!');
+                location.reload();
+            }, 2000);
+        }
+
+        function viewReport(reportId) {
+            const preview = document.getElementById('reportPreview');
+            const content = document.getElementById('reportContent');
+            
+            content.innerHTML = `
+                <div style="padding: 2rem;">
+                    <h2 style="text-align: center; margin-bottom: 2rem;">تقرير إحصائي - أكتوبر 2024</h2>
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <h3>ملخص تنفيذي</h3>
+                        <p>تم تسجيل 5 مرضى جدد خلال شهر أكتوبر 2024، منهم 2 حالة عالية الخطورة تحتاج لمتابعة دقيقة.</p>
+                    </div>
+
+                    <div style="margin-bottom: 2rem;">
+                        <h3>الإحصائيات الرئيسية</h3>
+                        <ul>
+                            <li>إجمالي المرضى: 5</li>
+                            <li>حالات عالية الخطورة: 2 (40%)</li>
+                            <li>حالات متوسطة الخطورة: 2 (40%)</li>
+                            <li>حالات منخفضة الخطورة: 1 (20%)</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-bottom: 2rem;">
+                        <h3>التوصيات</h3>
+                        <ul>
+                            <li>متابعة دورية للحالات عالية الخطورة كل أسبوعين</li>
+                            <li>إجراء تحاليل شاملة للحالات الجديدة</li>
+                            <li>تحديث البروتوكولات العلاجية حسب آخر الإرشادات</li>
+                        </ul>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 3rem;">
+                        <button class="btn btn-primary" onclick="downloadReport(${reportId})">📥 تحميل PDF</button>
+                        <button class="btn btn-secondary" onclick="printReport()">🖨️ طباعة</button>
+                    </div>
+                </div>
+            `;
+            
+            preview.style.display = 'block';
+            preview.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function closeReportPreview() {
+            document.getElementById('reportPreview').style.display = 'none';
+        }
+
+        function downloadReport(reportId) {
+            alert('سيتم تحميل التقرير بصيغة PDF (قريباً)');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        function showNotifications() {
+            document.getElementById('notificationsModal').classList.add('active');
+            loadNotifications();
+        }
+
+        async function loadNotifications() {
+            const response = await API.getAlerts();
+            const notifications = response.data;
+            
+            const content = document.getElementById('notificationsContent');
+            content.innerHTML = notifications.map(notif => `
+                <div class="notification-item ${notif.read ? 'read' : 'unread'}">
+                    <div class="notification-icon ${notif.type}">${notif.type === 'warning' ? '⚠️' : notif.type === 'info' ? 'ℹ️' : '✅'}</div>
+                    <div class="notification-content">
+                        <h4>${notif.title}</h4>
+                        <p>${notif.message}</p>
+                        <small>${new Date(notif.date).toLocaleString('ar-SA')}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function updateNotificationCount() {
+            const response = await API.getAlerts();
+            const unreadCount = response.data.filter(n => !n.read).length;
+            document.getElementById('notificationCount').textContent = unreadCount;
+        }
+    </script>
+
+    <style>
+        .clickable {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .clickable:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+    </style>
+</body>
+</html>

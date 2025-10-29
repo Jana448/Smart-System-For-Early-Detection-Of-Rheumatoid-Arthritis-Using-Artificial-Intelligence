@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التحليلات - نظام الكشف المبكر عن الروماتويد</title>
+    <link rel="stylesheet" href="frontend/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span class="icon">🏥</span>
+                <span>نظام الكشف المبكر عن الروماتويد</span>
+            </div>
+            <ul class="navbar-menu">
+                <li><a href="index.html">الرئيسية</a></li>
+                <li><a href="patients.html">المرضى</a></li>
+                <li><a href="analytics.html" class="active">التحليلات</a></li>
+                <li><a href="reports.html">التقارير</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <div class="notification-badge" onclick="showNotifications()">
+                    <span style="font-size: 1.5rem; cursor: pointer;">🔔</span>
+                    <span class="badge" id="notificationCount">2</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="main-container">
+        
+        <div class="page-header">
+            <h1>📊 التحليلات والإحصائيات</h1>
+            <p>تحليلات شاملة لبيانات المرضى والاتجاهات الطبية</p>
+        </div>
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-body">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <label style="font-weight: 600;">فترة التحليل:</label>
+                    <select id="analyticsPeriod" style="padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <option value="7">آخر 7 أيام</option>
+                        <option value="30" selected>آخر 30 يوم</option>
+                        <option value="90">آخر 3 أشهر</option>
+                        <option value="365">آخر سنة</option>
+                    </select>
+                    <button class="btn btn-secondary" onclick="refreshAnalytics()">🔄 تحديث</button>
+                    <button class="btn btn-primary" onclick="exportAnalytics()">📥 تصدير PDF</button>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-grid">
+          
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">توزيع مستويات الخطر</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="riskDistributionChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">المرضى الجدد (شهرياً)</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="newPatientsChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+            <div class="card" style="grid-column: span 2;">
+                <div class="card-header">
+                    <h3 class="card-title">اتجاهات التحاليل المخبرية</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="labTrendsChart" style="max-height: 350px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="stats-grid" style="margin-top: 2rem;">
+            <div class="stat-card primary">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">متوسط العمر</span>
+                    <div class="stat-card-icon">👤</div>
+                </div>
+                <div class="stat-card-value">42 سنة</div>
+                <div class="stat-card-change">
+                    <span>للمرضى المسجلين</span>
+                </div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">نسبة التحسن</span>
+                    <div class="stat-card-icon">📈</div>
+                </div>
+                <div class="stat-card-value">68%</div>
+                <div class="stat-card-change positive">
+                    <span>↑ 12%</span>
+                    <span>عن الشهر الماضي</span>
+                </div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">متوسط RF</span>
+                    <div class="stat-card-icon">🔬</div>
+                </div>
+                <div class="stat-card-value">58 IU/ml</div>
+                <div class="stat-card-change">
+                    <span>للحالات النشطة</span>
+                </div>
+            </div>
+
+            <div class="stat-card danger">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">متوسط Anti-CCP</span>
+                    <div class="stat-card-icon">🧪</div>
+                </div>
+                <div class="stat-card-value">85 U/ml</div>
+                <div class="stat-card-change">
+                    <span>للحالات النشطة</span>
+                </div>
+            </div>
+        </div>
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h3 class="card-title">الحالات الأكثر حاجة للمتابعة</h3>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>اسم المريض</th>
+                                <th>العمر</th>
+                                <th>RF</th>
+                                <th>Anti-CCP</th>
+                                <th>ESR</th>
+                                <th>CRP</th>
+                                <th>مستوى الخطر</th>
+                                <th>الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topCasesTable">
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 2rem;">
+                                    <div class="loading"><div class="spinner"></div></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔔 التنبيهات</h2>
+                <button class="modal-close" onclick="closeModal('notificationsModal')">×</button>
+            </div>
+            <div class="modal-body" id="notificationsContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="frontend/js/mock-data.js"></script>
+    <script src="frontend/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadAnalytics();
+        });
+
+        async function loadAnalytics() {
+            try {
+                const chartData = MockData.chartData;
+                
+                
+                const riskCtx = document.getElementById('riskDistributionChart').getContext('2d');
+                new Chart(riskCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: chartData.riskDistribution.labels,
+                        datasets: [{
+                            data: chartData.riskDistribution.data,
+                            backgroundColor: chartData.riskDistribution.colors
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+                const newPatientsCtx = document.getElementById('newPatientsChart').getContext('2d');
+                new Chart(newPatientsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.monthlyPatients.labels,
+                        datasets: [{
+                            label: 'عدد المرضى',
+                            data: chartData.monthlyPatients.data,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                const labTrendsCtx = document.getElementById('labTrendsChart').getContext('2d');
+                new Chart(labTrendsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.labTrends.labels,
+                        datasets: [
+                            {
+                                label: 'RF',
+                                data: chartData.labTrends.rf,
+                                borderColor: '#ef4444',
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Anti-CCP',
+                                data: chartData.labTrends.antiCCP,
+                                borderColor: '#f59e0b',
+                                tension: 0.4
+                            },
+                            {
+                                label: 'ESR',
+                                data: chartData.labTrends.esr,
+                                borderColor: '#10b981',
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+                loadTopCases();
+
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+            }
+        }
+
+        function loadTopCases() {
+            const patients = MockData.patients
+                .filter(p => p.riskLevel === 'high')
+                .sort((a, b) => b.labResults.rf - a.labResults.rf);
+
+            const tableBody = document.getElementById('topCasesTable');
+            tableBody.innerHTML = patients.map(patient => `
+                <tr>
+                    <td><strong>${patient.name}</strong></td>
+                    <td>${patient.age}</td>
+                    <td>${patient.labResults.rf}</td>
+                    <td>${patient.labResults.antiCCP}</td>
+                    <td>${patient.labResults.esr}</td>
+                    <td>${patient.labResults.crp}</td>
+                    <td><span class="badge badge-danger">خطر عالي</span></td>
+                    <td><button class="btn btn-sm btn-primary" onclick="window.location.href='patient-details.html?id=${patient.id}'">عرض</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function refreshAnalytics() {
+            location.reload();
+        }
+
+        function exportAnalytics() {
+            alert('سيتم تصدير التحليلات إلى PDF (قريباً)');
+        }
+
+        function showNotifications() {
+            document.getElementById('notificationsModal').classList.add('active');
+            loadNotifications();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        async function loadNotifications() {
+            const response = await API.getAlerts();
+            const notifications = response.data;
+            
+            const content = document.getElementById('notificationsContent');
+            content.innerHTML = notifications.map(notif => `
+                <div class="notification-item ${notif.read ? 'read' : 'unread'}">
+                    <div class="notification-icon ${notif.type}">${notif.type === 'warning' ? '⚠️' : notif.type === 'info' ? 'ℹ️' : '✅'}</div>
+                    <div class="notification-content">
+                        <h4>${notif.title}</h4>
+                        <p>${notif.message}</p>
+                        <small>${new Date(notif.date).toLocaleString('ar-SA')}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+        document.addEventListener('DOMContentLoaded', async function() {
+            const response = await API.getAlerts();
+            const unreadCount = response.data.filter(n => !n.read).length;
+            document.getElementById('notificationCount').textContent = unreadCount;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المرضى - نظام الكشف المبكر عن الروماتويد</title>
+    <link rel="stylesheet" href="frontend/css/style.css">
+</head>
+<body>
+    
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <span class="icon">🏥</span>
+                <span>نظام الكشف المبكر عن الروماتويد</span>
+            </div>
+            <ul class="navbar-menu">
+                <li><a href="index.html">الرئيسية</a></li>
+                <li><a href="patients.html" class="active">المرضى</a></li>
+                <li><a href="analytics.html">التحليلات</a></li>
+                <li><a href="reports.html">التقارير</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <div class="notification-badge" onclick="showNotifications()">
+                    <span style="font-size: 1.5rem; cursor: pointer;">🔔</span>
+                    <span class="badge" id="notificationCount">2</span>
+                </div>
+                <button class="btn btn-primary" onclick="showAddPatientModal()">➕ إضافة مريض</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h1>👥 إدارة المرضى</h1>
+            <p>عرض وإدارة جميع المرضى المسجلين في النظام</p>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="card-body">
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                    <input type="text" id="searchPatients" placeholder="🔍 بحث بالاسم، الرقم، أو الهاتف..." 
+                           style="flex: 1; min-width: 250px; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    
+                    <select id="filterRisk" style="padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <option value="">جميع المستويات</option>
+                        <option value="high">خطر عالي</option>
+                        <option value="medium">خطر متوسط</option>
+                        <option value="low">خطر منخفض</option>
+                    </select>
+                    
+                    <select id="filterStatus" style="padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <option value="">جميع الحالات</option>
+                        <option value="active">نشط</option>
+                        <option value="inactive">غير نشط</option>
+                    </select>
+                    
+                    <button class="btn btn-secondary" onclick="refreshPatients()">🔄 تحديث</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid" style="margin-bottom: 2rem;">
+            <div class="stat-card primary">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">إجمالي المرضى</span>
+                    <div class="stat-card-icon">👥</div>
+                </div>
+                <div class="stat-card-value" id="totalPatientsCount">10</div>
+                <div class="stat-card-change positive">
+                    <span>↑ 12%</span>
+                    <span>عن الشهر الماضي</span>
+                </div>
+            </div>
+
+            <div class="stat-card danger">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">خطر عالي</span>
+                    <div class="stat-card-icon">⚠️</div>
+                </div>
+                <div class="stat-card-value" id="highRiskCount">3</div>
+                <div class="stat-card-change negative">
+                    <span>↑ 5%</span>
+                    <span>يحتاج متابعة</span>
+                </div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">خطر متوسط</span>
+                    <div class="stat-card-icon">⚡</div>
+                </div>
+                <div class="stat-card-value" id="mediumRiskCount">4</div>
+                <div class="stat-card-change">
+                    <span>→ 0%</span>
+                    <span>مستقر</span>
+                </div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">خطر منخفض</span>
+                    <div class="stat-card-icon">✅</div>
+                </div>
+                <div class="stat-card-value" id="lowRiskCount">3</div>
+                <div class="stat-card-change positive">
+                    <span>↓ 8%</span>
+                    <span>تحسن ملحوظ</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">قائمة المرضى</h2>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="table-wrapper">
+                    <div style="text-align: center; padding: 2rem;">
+                        <div class="loading"><div class="spinner"></div></div>
+                        <p style="margin-top: 1rem; color: var(--text-secondary);">جاري تحميل المرضى...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addPatientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ إضافة مريض جديد</h2>
+                <button class="modal-close" onclick="closeModal('addPatientModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addPatientForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>الاسم الكامل *</label>
+                            <input type="text" id="patientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>العمر *</label>
+                            <input type="number" id="patientAge" min="1" max="120" required>
+                        </div>
+                        <div class="form-group">
+                            <label>الجنس *</label>
+                            <select id="patientGender" required>
+                                <option value="">اختر...</option>
+                                <option value="ذكر">ذكر</option>
+                                <option value="أنثى">أنثى</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>رقم الهاتف *</label>
+                            <input type="tel" id="patientPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>البريد الإلكتروني</label>
+                            <input type="email" id="patientEmail">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addPatientModal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="submitAddPatient()">💾 حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔔 التنبيهات</h2>
+                <button class="modal-close" onclick="closeModal('notificationsModal')">×</button>
+            </div>
+            <div class="modal-body" id="notificationsContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="frontend/js/mock-data.js"></script>
+    <script src="frontend/js/api.js"></script>
+    <script src="frontend/js/patients.js"></script>
+    
+    <script>
+        
+        function showNotifications() {
+            document.getElementById('notificationsModal').classList.add('active');
+            loadNotifications();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showAddPatientModal() {
+            document.getElementById('addPatientModal').classList.add('active');
+        }
+
+        async function submitAddPatient() {
+            try {
+                const form = document.getElementById('addPatientForm');
+                const name = document.getElementById('patientName').value;
+                const age = document.getElementById('patientAge').value;
+                const gender = document.getElementById('patientGender').value;
+                const phone = document.getElementById('patientPhone').value;
+                const email = document.getElementById('patientEmail').value;
+
+                if (!name || !age || !gender || !phone) {
+                    alert('الرجاء ملء جميع الحقول المطلوبة');
+                    return;
+                }
+
+                const patientData = {
+                    name: name,
+                    age: parseInt(age),
+                    gender: gender,
+                    phone: phone,
+                    email: email
+                };
+
+                const response = await API.addPatient(patientData);
+                
+                if (response.success) {
+                    alert('تم إضافة المريض بنجاح');
+                    closeModal('addPatientModal');
+                    form.reset();
+                    refreshPatients();
+                }
+            } catch (error) {
+                alert('حدث خطأ: ' + error.message);
+            }
+        }
+
+        async function loadNotifications() {
+            const response = await API.getAlerts();
+            const notifications = response.data;
+            
+            const content = document.getElementById('notificationsContent');
+            content.innerHTML = notifications.map(notif => `
+                <div class="notification-item ${notif.read ? 'read' : 'unread'}">
+                    <div class="notification-icon ${notif.type}">${notif.type === 'warning' ? '⚠️' : notif.type === 'info' ? 'ℹ️' : '✅'}</div>
+                    <div class="notification-content">
+                        <h4>${notif.title}</h4>
+                        <p>${notif.message}</p>
+                        <small>${new Date(notif.date).toLocaleString('ar-SA')}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await API.getAlerts();
+                const unreadCount = response.data.filter(n => !n.read).length;
+                document.getElementById('notificationCount').textContent = unreadCount;
+            } catch (error) {
+                console.log('تعذر تحميل التنبيهات');
+            }
+        });
+    </script>
+</body>
+</html>
